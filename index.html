@@ -772,6 +772,30 @@ async function guardarGasto() {
 
   // Guardar local para detección de duplicados
   S.gastos.push({ monto: parseFloat(monto)/1000, comercio, fecha, de: S.de });
+  if (S.scriptUrl) {
+    const payload = {
+      sheetId: S.sheetId,
+      quien: S.quien,
+      fecha: fecha,
+      comercio: comercio,
+      monto: parseFloat(monto),
+      de: S.de,
+      cat: S.cat,
+      nota: nota,
+      banco: S.banco
+    };
+    try {
+      await fetch(S.scriptUrl, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+    } catch(e) {
+      console.error('Error guardando:', e);
+    }
+    await new Promise(r => setTimeout(r, 800));
+  }
 
   document.getElementById('suc-amount').textContent = fmtCLP(parseFloat(monto));
   document.getElementById('suc-detail').textContent = `${comercio} · ${S.de} · ${S.cat} · ${S.banco}`;
