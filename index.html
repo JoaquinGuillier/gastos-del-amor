@@ -582,12 +582,12 @@ function activateTg(group, val) {
 function saveConfig() {
   S.scriptUrl = document.getElementById('cfg-url').value.trim();
   S.sheetId   = document.getElementById('cfg-sheet').value.trim();
-  sessionStorage.setItem('scriptUrl', S.scriptUrl);
-  sessionStorage.setItem('sheetId',   S.sheetId);
+localStorage.setItem('scriptUrl', S.scriptUrl);
+localStorage.setItem('sheetId', S.sheetId);
 }
 function setQuien(q) {
   S.quien = q;
-  sessionStorage.setItem('quien', q);
+  localStorage.setItem('quien', q);
   document.getElementById('cfg-juaco').classList.toggle('on', q==='juaco');
   document.getElementById('cfg-juaco').classList.toggle('red', q==='juaco');
   document.getElementById('cfg-jose').classList.toggle('on', q==='josefina');
