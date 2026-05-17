@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <!-- saved from url=(0045)file:///C:/Users/joaqu/Downloads/index_2.html -->
 <html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -6,7 +5,55 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Gastos del Amor</title>
 <link href="./index_files/css2" rel="stylesheet">
-<script src="./index_files/xlsx.full.min.js.download"></script>
+<script src="./index_files/xlsx.full.min.js.download">
+// ── MODAL 12 MESES ────────────────────────────────────────────
+let _dashData = null;
+const CAT_COLORS = {fijos:'#F0EEF8',super:'#E8637A',delivery:'#E67E22',nana:'#8E44AD',otro:'#5E5A78'};
+
+function abrirModal12m() {
+  if (!_dashData) return;
+  renderModal12m(_dashData.ultimosMeses, _dashData.promedio12);
+  document.getElementById('modal-12m').classList.add('show');
+}
+function cerrarModal12m() {
+  document.getElementById('modal-12m').classList.remove('show');
+}
+function renderModal12m(meses, promedio12) {
+  if (!meses || !meses.length) return;
+  const cats = ['fijos','super','delivery','nana','otro'];
+  const maxTotal = Math.max(...meses.map(m => m.total), 1);
+  let colsHTML = '', labelsHTML = '';
+  meses.forEach((mes, i) => {
+    const total = mes.total || 0;
+    const heightPct = (total / maxTotal * 100).toFixed(1);
+    let segsHTML = '';
+    cats.forEach(cat => {
+      const val = mes['cat_' + cat] || 0;
+      const pct = total > 0 ? (val / total * 100).toFixed(1) : 0;
+      segsHTML += '<div class="stacked-seg" style="height:' + pct + '%;background:' + CAT_COLORS[cat] + '"></div>';
+    });
+    colsHTML += '<div class="stacked-col" style="height:' + heightPct + '%" onclick="mostrarTooltip12m(' + i + ')">' + segsHTML + '</div>';
+    labelsHTML += '<div class="stacked-label">' + mes.nombre.split(' ')[0] + '</div>';
+  });
+  const legendHTML = cats.map(cat => '<div class="stacked-legend-item"><div class="stacked-legend-dot" style="background:' + CAT_COLORS[cat] + '"></div>' + cat + '</div>').join('');
+  const el = document.getElementById('modal-12m-content');
+  el.innerHTML = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px"><div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center"><div style="font-size:10px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:6px">Promedio 12m</div><div style="font-family:DM Serif Display,serif;font-size:20px;color:var(--ink)">' + fmtCLP(promedio12 * 1000) + '</div></div><div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center"><div style="font-size:10px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:6px">Meses</div><div style="font-family:DM Serif Display,serif;font-size:20px;color:var(--ink)">' + meses.length + '</div></div></div><div class="stacked-chart"><div class="stacked-col-wrap">' + colsHTML + '</div><div class="stacked-labels">' + labelsHTML + '</div><div class="stacked-legend">' + legendHTML + '</div><div class="stacked-tooltip" id="stacked-tooltip"></div></div>';
+  window._meses12m = meses;
+}
+function mostrarTooltip12m(idx) {
+  const mes = window._meses12m[idx];
+  if (!mes) return;
+  const cats = ['fijos','super','delivery','nana','otro'];
+  const tooltip = document.getElementById('stacked-tooltip');
+  const rows = cats.map(cat => {
+    const val = mes['cat_' + cat] || 0;
+    if (!val) return '';
+    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--border)"><div style="display:flex;align-items:center;gap:6px"><div style="width:8px;height:8px;border-radius:2px;background:' + CAT_COLORS[cat] + '"></div><span style="font-size:13px;color:var(--ink2)">' + cat + '</span></div><span style="font-size:13px;font-weight:600;color:var(--ink)">' + fmtCLP(val * 1000) + '</span></div>';
+  }).join('');
+  tooltip.innerHTML = '<div style="font-size:12px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:8px">' + mes.nombre + '</div>' + rows + '<div style="display:flex;justify-content:space-between;padding-top:8px"><span style="font-size:13px;font-weight:700;color:var(--ink)">Total</span><span style="font-size:14px;font-weight:700;color:var(--accent)">' + fmtCLP(mes.total * 1000) + '</span></div>';
+  tooltip.classList.add('show');
+}
+</script>
 <style>
 :root {
   --bg:      #0A0A0F;
@@ -209,6 +256,26 @@ input[type=file]{display:none}
 /* SCROLLBAR */
 ::-webkit-scrollbar{width:0;background:transparent}
 
+
+/* MODAL 12M */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:500;display:none;align-items:flex-end;justify-content:center}
+.modal-overlay.show{display:flex}
+.modal-sheet{background:var(--bg2);border-radius:24px 24px 0 0;width:100%;max-width:430px;max-height:90vh;overflow-y:auto;padding:20px 0 40px}
+.modal-handle{width:36px;height:4px;background:var(--border2);border-radius:2px;margin:0 auto 16px}
+.modal-header{padding:0 20px 16px;display:flex;align-items:center;justify-content:space-between}
+.modal-title{font-family:'DM Serif Display',serif;font-size:22px;color:var(--ink)}
+.modal-close{width:32px;height:32px;border-radius:50%;background:var(--card2);border:none;color:var(--ink2);font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.stacked-chart{padding:0 16px}
+.stacked-col-wrap{display:flex;gap:4px;align-items:flex-end;height:180px;margin-bottom:8px}
+.stacked-col{flex:1;display:flex;flex-direction:column;justify-content:flex-end;gap:1px;cursor:pointer;border-radius:4px 4px 0 0;overflow:hidden}
+.stacked-seg{width:100%;min-height:0}
+.stacked-labels{display:flex;gap:4px}
+.stacked-label{flex:1;text-align:center;font-size:9px;color:var(--ink3);font-weight:600;white-space:nowrap;overflow:hidden}
+.stacked-legend{display:flex;flex-wrap:wrap;gap:8px;padding:12px 0 0}
+.stacked-legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--ink2)}
+.stacked-legend-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+.stacked-tooltip{background:var(--card);border:1px solid var(--border2);border-radius:12px;padding:12px;margin:12px 0 0;display:none}
+.stacked-tooltip.show{display:block}
 </style>
 </head>
 <body>
@@ -1027,12 +1094,13 @@ try {
     const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(S.scriptUrl + '?action=metrics&sheetId=' + S.sheetId);
     const r = await fetch(proxyUrl);
     const data = await r.json();
-   S.comerciosHistorial = data.comerciosHistorial || {};
+    S.comerciosHistorial = data.comerciosHistorial || {};
     _dashData = data;
     renderDashboard(data);
   } catch(e) {
     // Demo data when script not connected
-    renderDashboard(getDemoMetrics());
+    _dashData = getDemoMetrics();
+    renderDashboard(_dashData);
   }
  }
 function getDemoMetrics() {
@@ -1073,7 +1141,7 @@ function renderDashboard(d) {
         <div class="metric-val">${fmtCLP(m.total * 1000)}</div>
         <div class="metric-trend ${d.variacion>0?'up':'down'}">${d.variacion>0?'▲':'▼'} ${Math.abs(d.variacion).toFixed(1)}% vs mes anterior</div>
       </div>
-      <div class="metric" style="cursor:pointer;active:opacity:0.8" onclick="abrirModal12m()">
+      <div class="metric" style="cursor:pointer" onclick="abrirModal12m()">
         <div class="metric-label">Promedio 12m ↗</div>
         <div class="metric-val sm">${fmtCLP(d.promedio12 * 1000)}</div>
         <div class="metric-sub" style="color:var(--accent)">ver detalle →</div>
@@ -1328,29 +1396,14 @@ function renderModal12m(meses, promedio12) {
     cats.forEach(cat => {
       const val = mes['cat_' + cat] || 0;
       const pct = total > 0 ? (val / total * 100).toFixed(1) : 0;
-      segsHTML += `<div class="stacked-seg" style="height:${pct}%;background:${CAT_COLORS[cat]}"></div>`;
+      segsHTML += '<div class="stacked-seg" style="height:' + pct + '%;background:' + CAT_COLORS[cat] + '"></div>';
     });
-    colsHTML += `<div class="stacked-col" style="height:${heightPct}%" onclick="mostrarTooltip12m(${i})">${segsHTML}</div>`;
-    labelsHTML += `<div class="stacked-label">${mes.nombre.split(' ')[0]}</div>`;
+    colsHTML += '<div class="stacked-col" style="height:' + heightPct + '%" onclick="mostrarTooltip12m(' + i + ')">' + segsHTML + '</div>';
+    labelsHTML += '<div class="stacked-label">' + mes.nombre.split(' ')[0] + '</div>';
   });
-  const legendHTML = cats.map(cat => `<div class="stacked-legend-item"><div class="stacked-legend-dot" style="background:${CAT_COLORS[cat]}"></div>${cat}</div>`).join('');
-  document.getElementById('modal-12m-content').innerHTML = `
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:0 16px;margin-bottom:16px">
-      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center">
-        <div style="font-size:10px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:6px">Promedio 12m</div>
-        <div style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--ink)">${fmtCLP(promedio12 * 1000)}</div>
-      </div>
-      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center">
-        <div style="font-size:10px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:6px">Meses registrados</div>
-        <div style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--ink)">${meses.length}</div>
-      </div>
-    </div>
-    <div class="stacked-chart">
-      <div class="stacked-col-wrap">${colsHTML}</div>
-      <div class="stacked-labels">${labelsHTML}</div>
-      <div class="stacked-legend">${legendHTML}</div>
-      <div class="stacked-tooltip" id="stacked-tooltip"></div>
-    </div>`;
+  const legendHTML = cats.map(cat => '<div class="stacked-legend-item"><div class="stacked-legend-dot" style="background:' + CAT_COLORS[cat] + '"></div>' + cat + '</div>').join('');
+  const el = document.getElementById('modal-12m-content');
+  el.innerHTML = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px"><div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center"><div style="font-size:10px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:6px">Promedio 12m</div><div style="font-family:DM Serif Display,serif;font-size:20px;color:var(--ink)">' + fmtCLP(promedio12 * 1000) + '</div></div><div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center"><div style="font-size:10px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:6px">Meses</div><div style="font-family:DM Serif Display,serif;font-size:20px;color:var(--ink)">' + meses.length + '</div></div></div><div class="stacked-chart"><div class="stacked-col-wrap">' + colsHTML + '</div><div class="stacked-labels">' + labelsHTML + '</div><div class="stacked-legend">' + legendHTML + '</div><div class="stacked-tooltip" id="stacked-tooltip"></div></div>';
   window._meses12m = meses;
 }
 function mostrarTooltip12m(idx) {
@@ -1361,11 +1414,24 @@ function mostrarTooltip12m(idx) {
   const rows = cats.map(cat => {
     const val = mes['cat_' + cat] || 0;
     if (!val) return '';
-    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--border)"><div style="display:flex;align-items:center;gap:6px"><div style="width:8px;height:8px;border-radius:2px;background:${CAT_COLORS[cat]}"></div><span style="font-size:13px;color:var(--ink2)">${cat}</span></div><span style="font-size:13px;font-weight:600;color:var(--ink)">${fmtCLP(val * 1000)}</span></div>`;
+    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--border)"><div style="display:flex;align-items:center;gap:6px"><div style="width:8px;height:8px;border-radius:2px;background:' + CAT_COLORS[cat] + '"></div><span style="font-size:13px;color:var(--ink2)">' + cat + '</span></div><span style="font-size:13px;font-weight:600;color:var(--ink)">' + fmtCLP(val * 1000) + '</span></div>';
   }).join('');
-  tooltip.innerHTML = `<div style="font-size:12px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:8px">${mes.nombre}</div>${rows}<div style="display:flex;justify-content:space-between;padding-top:8px"><span style="font-size:13px;font-weight:700;color:var(--ink)">Total</span><span style="font-size:14px;font-weight:700;color:var(--accent)">${fmtCLP(mes.total * 1000)}</span></div>`;
+  tooltip.innerHTML = '<div style="font-size:12px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:8px">' + mes.nombre + '</div>' + rows + '<div style="display:flex;justify-content:space-between;padding-top:8px"><span style="font-size:13px;font-weight:700;color:var(--ink)">Total</span><span style="font-size:14px;font-weight:700;color:var(--accent)">' + fmtCLP(mes.total * 1000) + '</span></div>';
   tooltip.classList.add('show');
 }
 </script>
 
+
+
+<!-- MODAL: 12 MESES DETALLE -->
+<div class="modal-overlay" id="modal-12m" onclick="if(event.target===this)cerrarModal12m()">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <div class="modal-title">Últimos <em style="color:var(--accent);font-style:italic">12 meses</em></div>
+      <button class="modal-close" onclick="cerrarModal12m()">×</button>
+    </div>
+    <div id="modal-12m-content" style="padding:0 16px"></div>
+  </div>
+</div>
 </body></html>
