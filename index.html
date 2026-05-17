@@ -35,8 +35,8 @@ html,body{height:100%;background:var(--bg);font-family:'DM Sans',sans-serif;colo
 .app{max-width:430px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column;position:relative}
 
 /* NAV */
-.nav{display:flex;background:rgba(10,10,15,0.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--border);padding:0 4px;position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:600px;z-index:100}
-.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 1px 10px;background:none;border:none;font-family:'DM Sans',sans-serif;font-size:9px;font-weight:500;color:var(--ink3);cursor:pointer;transition:color 0.2s;position:relative}
+.nav{display:flex;background:rgba(10,10,15,0.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--border);padding:0 4px;position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;z-index:100}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px 12px;background:none;border:none;font-family:'DM Sans',sans-serif;font-size:10px;font-weight:500;color:var(--ink3);cursor:pointer;transition:color 0.2s;position:relative}
 .nav-btn svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;transition:all 0.2s}
 .nav-btn.active{color:var(--accent)}
 .nav-btn.active svg{filter:drop-shadow(0 0 6px rgba(232,99,122,0.5))}
@@ -584,7 +584,7 @@ window.addEventListener('load', () => {
     document.getElementById('cfg-jose').classList.add('on','red');
     document.getElementById('cfg-juaco').classList.remove('on','red');
   }
-  if (S.scriptUrl) { loadDashboard(); loadHistorial(); }
+  loadDashboard(); loadHistorial();
 
   // Close autocomplete on outside click
   document.addEventListener('click', (e) => {
@@ -1057,16 +1057,49 @@ function getDemoMetrics() {
 
 function renderDashboard(d) {
   const m = d.mesActual;
-  const maxMes = Math.max(...d.ultimosMeses.map(x=>x.total));
-  const maxCat = Math.max(...Object.values(d.porCategoria));
-  const totalPersonas = m.juaco + m.jose + m.ambos;
+  const maxMes = Math.max(...d.ultimosMeses.map(x=>x.total), 1);
+  const maxCat = Math.max(...Object.values(d.porCategoria), 1);
+  const totalPersonas = (m.totalJuaco || m.juaco || 0) + (m.totalJose || m.jose || 0) + (m.ambos || 0);
+  const juacoVal = m.totalJuaco || m.juaco || 0;
+  const joseVal  = m.totalJose  || m.jose  || 0;
+  const ambosVal = m.ambos || 0;
 
   document.getElementById('dash-period').textContent = m.nombre;
-
   const catColors = {fijos:'var(--ink)',super:'var(--accent)',delivery:'#E67E22',nana:'#8E44AD',otro:'var(--ink3)'};
 
+  // Ahorros section - solo si hay datos
+  const tieneAhorros = m.ahorroJuaco || m.ahorroJose || m.ahorroFamiliar;
+  const ahorrosHTML = tieneAhorros ? `
+    <div class="card">
+      <div class="card-title">Ahorros del mes</div>
+      ${m.sueldoJuaco ? `<div class="split-row">
+        <div class="split-name" style="width:80px;font-size:12px">Sueldo J.</div>
+        <div class="split-bar-wrap"><div class="split-bar-bg"><div class="split-bar-fg" style="width:100%;background:var(--accent)"></div></div></div>
+        <div class="split-amount">${fmtCLP(m.sueldoJuaco*1000)}</div>
+      </div>` : ''}
+      ${m.ahorroJuaco ? `<div class="split-row">
+        <div class="split-name" style="width:80px;font-size:12px">Ahorro J.</div>
+        <div class="split-bar-wrap"><div class="split-bar-bg"><div class="split-bar-fg" style="width:${m.sueldoJuaco?Math.min(100,(m.ahorroJuaco/m.sueldoJuaco*100)).toFixed(0):100}%;background:var(--green)"></div></div></div>
+        <div class="split-amount" style="color:var(--green)">${fmtCLP(m.ahorroJuaco*1000)}</div>
+      </div>` : ''}
+      ${m.sueldoJose ? `<div class="split-row">
+        <div class="split-name" style="width:80px;font-size:12px">Sueldo Jose</div>
+        <div class="split-bar-wrap"><div class="split-bar-bg"><div class="split-bar-fg" style="width:100%;background:var(--accent)"></div></div></div>
+        <div class="split-amount">${fmtCLP(m.sueldoJose*1000)}</div>
+      </div>` : ''}
+      ${m.ahorroJose ? `<div class="split-row">
+        <div class="split-name" style="width:80px;font-size:12px">Ahorro Jose</div>
+        <div class="split-bar-wrap"><div class="split-bar-bg"><div class="split-bar-fg" style="width:${m.sueldoJose?Math.min(100,(m.ahorroJose/m.sueldoJose*100)).toFixed(0):100}%;background:var(--green)"></div></div></div>
+        <div class="split-amount" style="color:var(--green)">${fmtCLP(m.ahorroJose*1000)}</div>
+      </div>` : ''}
+      ${m.ahorroFamiliar ? `<div class="split-row" style="border-top:1px solid var(--border2)">
+        <div class="split-name" style="width:80px;font-size:12px;font-weight:700;color:var(--green)">Ahorro fam.</div>
+        <div class="split-bar-wrap"><div class="split-bar-bg"><div class="split-bar-fg" style="width:100%;background:var(--green)"></div></div></div>
+        <div class="split-amount" style="color:var(--green);font-size:15px;font-weight:700">${fmtCLP(m.ahorroFamiliar*1000)}</div>
+      </div>` : ''}
+    </div>` : '';
+
   document.getElementById('dashboard-content').innerHTML = `
-    <!-- Total mes -->
     <div class="metric-grid">
       <div class="metric full">
         <div class="metric-label">Gasto total ${m.nombre}</div>
@@ -1076,39 +1109,39 @@ function renderDashboard(d) {
       <div class="metric">
         <div class="metric-label">Promedio 12m</div>
         <div class="metric-val sm">${fmtCLP(d.promedio12 * 1000)}</div>
-        <div class="metric-sub">mensual</div>
+        <div class="metric-sub">mensual real</div>
       </div>
       <div class="metric">
         <div class="metric-label">Gastos este mes</div>
-<div class="metric-val sm">${d.totalMovimientos || d.topGastos?.length || '—'}</div>
-<div class="metric-sub">movimientos</div>
+        <div class="metric-val sm">${d.totalMovimientos || d.topGastos?.length || '—'}</div>
+        <div class="metric-sub">movimientos</div>
       </div>
     </div>
 
-    <!-- Split Juaco / Jose -->
     <div class="card">
       <div class="card-title">Distribución del mes</div>
       <div class="split-row">
         <div class="split-name">Ambos</div>
-        <div class="split-bar-wrap"><div class="split-bar-bg"><div class="split-bar-fg" style="width:${(m.ambos/totalPersonas*100).toFixed(0)}%;background:var(--ink)"></div></div></div>
-        <div class="split-amount">${fmtCLP(m.ambos*1000)}</div>
-        <div class="split-pct">${(m.ambos/totalPersonas*100).toFixed(0)}%</div>
+        <div class="split-bar-wrap"><div class="split-bar-bg"><div class="split-bar-fg" style="width:${totalPersonas?((ambosVal/totalPersonas)*100).toFixed(0):0}%;background:var(--ink)"></div></div></div>
+        <div class="split-amount">${fmtCLP(ambosVal*1000)}</div>
+        <div class="split-pct">${totalPersonas?((ambosVal/totalPersonas)*100).toFixed(0):0}%</div>
       </div>
       <div class="split-row">
         <div class="split-name">Juaco</div>
-        <div class="split-bar-wrap"><div class="split-bar-bg"><div class="split-bar-fg" style="width:${(m.juaco/totalPersonas*100).toFixed(0)}%;background:var(--accent)"></div></div></div>
-        <div class="split-amount">${fmtCLP(m.juaco*1000)}</div>
-        <div class="split-pct">${(m.juaco/totalPersonas*100).toFixed(0)}%</div>
+        <div class="split-bar-wrap"><div class="split-bar-bg"><div class="split-bar-fg" style="width:${totalPersonas?((juacoVal/totalPersonas)*100).toFixed(0):0}%;background:var(--accent)"></div></div></div>
+        <div class="split-amount">${fmtCLP(juacoVal*1000)}</div>
+        <div class="split-pct">${totalPersonas?((juacoVal/totalPersonas)*100).toFixed(0):0}%</div>
       </div>
       <div class="split-row">
         <div class="split-name">Jose</div>
-        <div class="split-bar-wrap"><div class="split-bar-bg"><div class="split-bar-fg" style="width:${(m.jose/totalPersonas*100).toFixed(0)}%;background:var(--green)"></div></div></div>
-        <div class="split-amount">${fmtCLP(m.jose*1000)}</div>
-        <div class="split-pct">${(m.jose/totalPersonas*100).toFixed(0)}%</div>
+        <div class="split-bar-wrap"><div class="split-bar-bg"><div class="split-bar-fg" style="width:${totalPersonas?((joseVal/totalPersonas)*100).toFixed(0):0}%;background:var(--green)"></div></div></div>
+        <div class="split-amount">${fmtCLP(joseVal*1000)}</div>
+        <div class="split-pct">${totalPersonas?((joseVal/totalPersonas)*100).toFixed(0):0}%</div>
       </div>
     </div>
 
-    <!-- Por categoría -->
+    ${ahorrosHTML}
+
     <div class="card">
       <div class="card-title">Por categoría</div>
       <div class="bar-chart">
@@ -1121,9 +1154,8 @@ function renderDashboard(d) {
       </div>
     </div>
 
-    <!-- Últimos meses -->
     <div class="card">
-      <div class="card-title">Últimos meses</div>
+      <div class="card-title">Últimos 12 meses</div>
       <div class="month-list">
         ${d.ultimosMeses.map(mes=>`
           <div class="month-item">
@@ -1134,7 +1166,6 @@ function renderDashboard(d) {
       </div>
     </div>
 
-    <!-- Top gastos -->
     <div class="card">
       <div class="card-title">Top gastos del mes</div>
       <div class="tx-list">
@@ -1208,8 +1239,7 @@ async function loadHistorial() {
   </div>`;
 
   try {
-    const proxyUrl2 = 'https://corsproxy.io/?' + encodeURIComponent(S.scriptUrl + '?action=metrics&sheetId=' + S.sheetId);
-    const r = await fetch(proxyUrl2);
+    const r = await fetch(`${S.scriptUrl}?action=metrics&sheetId=${S.sheetId}`);
     const data = await r.json();
     historialData = data.historial || [];
     S.comerciosHistorial = data.comerciosHistorial || {};
