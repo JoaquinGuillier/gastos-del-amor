@@ -575,17 +575,15 @@ const CAT_EMOJI = {fijos:'🏠',super:'🛒',delivery:'🍕',nana:'👶',otro:'�
 
 // ── Init ──────────────────────────────────────────────────────
 window.addEventListener('load', () => {
-  S.scriptUrl = sessionStorage.getItem('scriptUrl') || '';
-  S.sheetId   = sessionStorage.getItem('sheetId')   || S.sheetId;
-  S.quien     = sessionStorage.getItem('quien')      || 'juaco';
-  if (S.scriptUrl) document.getElementById('cfg-url').value   = S.scriptUrl;
+  S.quien = localStorage.getItem('quien') || 'juaco';
+  if (document.getElementById('cfg-url')) document.getElementById('cfg-url').value = S.scriptUrl;
   document.getElementById('cfg-sheet').value = S.sheetId;
   document.getElementById('f-fecha').value   = today();
   if (S.quien === 'josefina') {
     document.getElementById('cfg-jose').classList.add('on','red');
     document.getElementById('cfg-juaco').classList.remove('on','red');
   }
-  if (S.scriptUrl) { loadDashboard(); loadHistorial(); }
+  loadDashboard(); loadHistorial();
 
   // Close autocomplete on outside click
   document.addEventListener('click', (e) => {
