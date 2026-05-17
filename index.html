@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -186,6 +187,20 @@ input:focus,select:focus{background:var(--white);border-color:var(--ink4)}
 
 input[type=file]{display:none}
 .pb{height:20px}
+
+/* AUTOCOMPLETE */
+.autocomplete-wrap{position:relative}
+.autocomplete-list{position:absolute;top:100%;left:0;right:0;background:var(--white);border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.12);z-index:200;overflow:hidden;display:none;max-height:200px;overflow-y:auto}
+.autocomplete-list.show{display:block}
+.autocomplete-item{padding:11px 14px;font-size:14px;color:var(--ink);cursor:pointer;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+.autocomplete-item:last-child{border-bottom:none}
+.autocomplete-item:active{background:var(--paper)}
+.autocomplete-meta{font-size:11px;color:var(--ink3)}
+
+/* HISTORIAL */
+.hist-filter{display:flex;gap:6px;padding:0 16px;margin-bottom:12px;overflow-x:auto;scrollbar-width:none}
+.hist-filter::-webkit-scrollbar{display:none}
+
 </style>
 </head>
 <body>
@@ -201,6 +216,9 @@ input[type=file]{display:none}
   </button>
   <button class="nav-btn" onclick="showScreen('s-dashboard')" id="nb-dashboard">
     <svg viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>Métricas
+  </button>
+  <button class="nav-btn" onclick="showScreen('s-historial')" id="nb-historial">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Historial
   </button>
   <button class="nav-btn" onclick="showScreen('s-config')" id="nb-config">
     <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Config
@@ -251,7 +269,11 @@ input[type=file]{display:none}
         <div class="field"><label>Fecha</label><input type="date" id="f-fecha"></div>
         <div class="field"><label>Monto ($)</label><input type="number" id="f-monto" placeholder="0" inputmode="numeric" oninput="checkDuplicate()"></div>
       </div>
-      <div class="field"><label>Comercio / Descripción</label><input type="text" id="f-comercio" placeholder="ej: Jumbo, Copec..." oninput="onComercioChange()"></div>
+      <div class="field autocomplete-wrap">
+        <label>Comercio / Descripción</label>
+        <input type="text" id="f-comercio" placeholder="ej: Jumbo, Copec..." oninput="onComercioChange()" autocomplete="off">
+        <div class="autocomplete-list" id="autocomplete-list"></div>
+      </div>
     </div>
 
     <div class="card">
@@ -433,6 +455,34 @@ input[type=file]{display:none}
   <div class="pb"></div>
 </div>
 
+<!-- ═══════════════════════════════════════════════
+     SCREEN 5: HISTORIAL
+═══════════════════════════════════════════════ -->
+<div class="screen" id="s-historial">
+  <div class="page-header">
+    <div class="page-title">Histo<em>rial</em></div>
+    <div class="page-sub" id="hist-sub">Gastos registrados este mes</div>
+  </div>
+
+  <div class="hist-filter">
+    <button class="tab on" onclick="setHistFilter('todos',this)">Todos</button>
+    <button class="tab" onclick="setHistFilter('juaco',this)">Juaco</button>
+    <button class="tab" onclick="setHistFilter('jose',this)">Jose</button>
+    <button class="tab" onclick="setHistFilter('ambos',this)">Ambos</button>
+    <button class="tab" onclick="setHistFilter('fijos',this)">Fijos</button>
+    <button class="tab" onclick="setHistFilter('super',this)">Super</button>
+    <button class="tab" onclick="setHistFilter('delivery',this)">Delivery</button>
+  </div>
+
+  <div id="hist-content" style="padding:0 16px">
+    <div style="text-align:center;padding:40px;color:var(--ink3)">
+      <div style="font-size:32px;margin-bottom:12px">📋</div>
+      <div style="font-size:14px">Cargando historial...</div>
+    </div>
+  </div>
+  <div class="pb"></div>
+</div>
+
 </div><!-- /app -->
 
 <script>
@@ -440,8 +490,9 @@ input[type=file]{display:none}
 const S = {
   de: 'ambos', cat: 'super', banco: 'Santander', quien: 'juaco',
   scriptUrl: '', sheetId: '1k6yCT71_O_hV7yo8dDXuC4neQIn1M5-5',
-  gastos: [], // gastos locales en sesión para detección de duplicados
-  estadoMovs: [], // movimientos del estado de cuenta parseados
+  gastos: [],
+  estadoMovs: [],
+  comerciosHistorial: {},
 };
 
 const PATRONES_CAT = {
@@ -474,7 +525,14 @@ window.addEventListener('load', () => {
     document.getElementById('cfg-jose').classList.add('on','red');
     document.getElementById('cfg-juaco').classList.remove('on','red');
   }
-  if (S.scriptUrl) loadDashboard();
+  if (S.scriptUrl) { loadDashboard(); loadHistorial(); }
+
+  // Close autocomplete on outside click
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.autocomplete-wrap')) {
+      document.getElementById('autocomplete-list').classList.remove('show');
+    }
+  });
 });
 
 function today() { return new Date().toISOString().split('T')[0]; }
@@ -488,6 +546,7 @@ function showScreen(id) {
   document.getElementById(id).classList.add('active');
   document.getElementById('nb-' + id.replace('s-','')).classList.add('active');
   if (id === 's-dashboard') loadDashboard();
+  if (id === 's-historial') loadHistorial();
 }
 
 // ── Tabs ──────────────────────────────────────────────────────
@@ -894,6 +953,7 @@ async function loadDashboard() {
   try {
     const r = await fetch(`${S.scriptUrl}?action=metrics&sheetId=${S.sheetId}`);
     const data = await r.json();
+    S.comerciosHistorial = data.comerciosHistorial || {};
     renderDashboard(data);
   } catch(e) {
     // Demo data when script not connected
@@ -1013,6 +1073,129 @@ function renderDashboard(d) {
       </div>
     </div>
     <div class="pb"></div>`;
+}
+
+// ── Autocomplete ──────────────────────────────────────────────
+function onComercioChange() {
+  const v = document.getElementById('f-comercio').value.trim();
+  if (v.length > 1) sugerirCampos(v);
+  checkDuplicate();
+  showAutocomplete(v);
+}
+
+function showAutocomplete(query) {
+  const list = document.getElementById('autocomplete-list');
+  if (!query || query.length < 2 || !S.comerciosHistorial) {
+    list.classList.remove('show');
+    return;
+  }
+
+  const q = query.toUpperCase();
+  const matches = Object.entries(S.comerciosHistorial)
+    .filter(([k]) => k.includes(q))
+    .sort((a,b) => b[1].count - a[1].count)
+    .slice(0, 5);
+
+  if (!matches.length) { list.classList.remove('show'); return; }
+
+  list.innerHTML = matches.map(([nombre, data]) => `
+    <div class="autocomplete-item" onclick="selectAutocomplete('${nombre.replace(/'/g,"\\'")}','${data.de}','${data.cat}')">
+      <span>${nombre.charAt(0) + nombre.slice(1).toLowerCase()}</span>
+      <span class="autocomplete-meta">${data.de} · ${data.cat} · ${data.count}x</span>
+    </div>`).join('');
+  list.classList.add('show');
+}
+
+function selectAutocomplete(nombre, de, cat) {
+  document.getElementById('f-comercio').value = nombre.charAt(0) + nombre.slice(1).toLowerCase();
+  document.getElementById('autocomplete-list').classList.remove('show');
+  activateTg('de', de);
+  activateTg('cat', cat || 'otro');
+  checkDuplicate();
+}
+
+// ── Historial ─────────────────────────────────────────────────
+let historialData = [];
+let historialFilter = 'todos';
+
+async function loadHistorial() {
+  const content = document.getElementById('hist-content');
+  if (!S.scriptUrl) {
+    content.innerHTML = `<div style="text-align:center;padding:40px;color:var(--ink3)">
+      <div style="font-size:32px;margin-bottom:12px">⚙️</div>
+      <div style="font-size:14px">Configura el Script URL para ver el historial</div>
+    </div>`;
+    return;
+  }
+
+  content.innerHTML = `<div style="text-align:center;padding:40px">
+    <div class="spin" style="margin:0 auto"></div>
+    <div style="font-size:13px;color:var(--ink3);margin-top:12px">Cargando...</div>
+  </div>`;
+
+  try {
+    const r = await fetch(`${S.scriptUrl}?action=metrics&sheetId=${S.sheetId}`);
+    const data = await r.json();
+    historialData = data.historial || [];
+    S.comerciosHistorial = data.comerciosHistorial || {};
+    document.getElementById('hist-sub').textContent =
+      `${historialData.length} gastos en ${data.mesActual?.nombre || 'este mes'}`;
+    renderHistorial();
+  } catch(e) {
+    content.innerHTML = `<div style="text-align:center;padding:40px;color:var(--ink3)">
+      <div style="font-size:14px">No se pudo cargar el historial</div>
+    </div>`;
+  }
+}
+
+function setHistFilter(filter, btn) {
+  historialFilter = filter;
+  document.querySelectorAll('.hist-filter .tab').forEach(b => b.classList.remove('on'));
+  btn.classList.add('on');
+  renderHistorial();
+}
+
+function renderHistorial() {
+  const content = document.getElementById('hist-content');
+  let items = historialData;
+
+  if (historialFilter !== 'todos') {
+    items = items.filter(g => {
+      const de = String(g.de || '').toLowerCase();
+      const cat = String(g.cat || '').toLowerCase();
+      const quien = String(g.quien || '').toLowerCase();
+      return de === historialFilter || cat === historialFilter || quien === historialFilter;
+    });
+  }
+
+  if (!items.length) {
+    content.innerHTML = `<div style="text-align:center;padding:40px;color:var(--ink3)">
+      <div style="font-size:14px">No hay gastos con este filtro</div>
+    </div>`;
+    return;
+  }
+
+  const total = items.reduce((a, g) => a + (parseFloat(g.monto) || 0), 0);
+
+  content.innerHTML = `
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <div style="font-size:13px;color:var(--ink3)">${items.length} gastos</div>
+      <div style="font-size:16px;font-weight:700;color:var(--ink)">${fmtCLP(total * 1000)}</div>
+    </div>
+    <div class="tx-list">
+      ${items.map(g => `
+        <div class="tx">
+          <div class="tx-icon" style="background:var(--paper)">${CAT_EMOJI[String(g.cat).toLowerCase()] || '💳'}</div>
+          <div class="tx-body">
+            <div class="tx-name">${g.concepto || g.comercio || '—'}</div>
+            <div class="tx-meta">Día ${g.dia || '?'} · ${g.de || ''} · ${g.quien || ''}</div>
+          </div>
+          <div>
+            <div class="tx-amount">${fmtCLP((parseFloat(g.monto) || 0) * 1000)}</div>
+            <div class="tx-cat">${g.cat || 'otro'}</div>
+          </div>
+        </div>`).join('')}
+    </div>`;
 }
 
 // ── Helpers ───────────────────────────────────────────────────
