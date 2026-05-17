@@ -754,27 +754,24 @@ async function guardarGasto() {
   const btn = document.getElementById('btn-guardar');
   btn.disabled=true; btn.textContent='Guardando...';
 
-  // Guardar local para detección de duplicados
-  S.gastos.push({ monto: parseFloat(monto)/1000, comercio, fecha, de: S.de });
+  const payload = {
+    sheetId: S.sheetId, quien: S.quien,
+    fecha, comercio, monto: parseFloat(monto),
+    de: S.de, cat: S.cat, nota, banco: S.banco
+  };
 
   if (S.scriptUrl) {
-    // Build URL with params — opens in new tab, registers, then closes
-    const p = encodeURIComponent;
-    const url = `${S.scriptUrl}?sheetId=${S.sheetId}&quien=${S.quien}&fecha=${p(fecha)}&comercio=${p(comercio)}&monto=${monto}&de=${p(S.de)}&cat=${p(S.cat)}&nota=${p(nota)}&banco=${p(S.banco)}`;
-    
-    // Open in hidden iframe to avoid leaving the app
-    let iframe = document.getElementById('save-iframe');
-    if (!iframe) {
-      iframe = document.createElement('iframe');
-      iframe.id = 'save-iframe';
-      iframe.style.display = 'none';
-      document.body.appendChild(iframe);
-    }
-    iframe.src = url;
-    
-    // Wait a moment for the request to fire
-    await new Promise(r => setTimeout(r, 1500));
+    try {
+      await fetch(S.scriptUrl, {
+        method:'POST', mode:'no-cors',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify(payload)
+      });
+    } catch(e) {}
   }
+
+  // Guardar local para detección de duplicados
+  S.gastos.push({ monto: parseFloat(monto)/1000, comercio, fecha, de: S.de });
 
   document.getElementById('suc-amount').textContent = fmtCLP(parseFloat(monto));
   document.getElementById('suc-detail').textContent = `${comercio} · ${S.de} · ${S.cat} · ${S.banco}`;
