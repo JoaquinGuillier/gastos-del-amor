@@ -1027,7 +1027,8 @@ try {
     const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(S.scriptUrl + '?action=metrics&sheetId=' + S.sheetId);
     const r = await fetch(proxyUrl);
     const data = await r.json();
-    S.comerciosHistorial = data.comerciosHistorial || {};
+   S.comerciosHistorial = data.comerciosHistorial || {};
+    _dashData = data;
     renderDashboard(data);
   } catch(e) {
     // Demo data when script not connected
