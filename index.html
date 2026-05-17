@@ -760,15 +760,6 @@ async function guardarGasto() {
     de: S.de, cat: S.cat, nota, banco: S.banco
   };
 
-  if (S.scriptUrl) {
-    try {
-      await fetch(S.scriptUrl, {
-        method:'POST', mode:'no-cors',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringify(payload)
-      });
-    } catch(e) {}
-  }
 
   // Guardar local para detección de duplicados
   S.gastos.push({ monto: parseFloat(monto)/1000, comercio, fecha, de: S.de });
