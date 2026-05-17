@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Gastos del Amor</title>
 <link href="./index_files/css2" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js">
+<script src="./index_files/xlsx.full.min.js.download">
 // ── MODAL 12 MESES ────────────────────────────────────────────
 let _dashData = null;
 const CAT_COLORS = {fijos:'#F0EEF8',super:'#E8637A',delivery:'#E67E22',nana:'#8E44AD',otro:'#5E5A78'};
@@ -50,8 +50,45 @@ function mostrarTooltip12m(idx) {
   tooltip.innerHTML = '<div style="font-size:12px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:8px">' + mes.nombre + '</div>' + rows + '<div style="display:flex;justify-content:space-between;padding-top:8px"><span style="font-size:13px;font-weight:700;color:var(--ink)">Total</span><span style="font-size:14px;font-weight:700;color:var(--accent)">' + fmtCLP(mes.total * 1000) + '</span></div>';
   tooltip.classList.add('show');
 }
+// ── MODAL AHORROS ─────────────────────────────────────────────
+function abrirModalAhorros() {
+  if (!_dashData) return;
+  renderModalAhorros(_dashData.ultimosMeses);
+  document.getElementById('modal-ahorros').classList.add('show');
+}
+function cerrarModalAhorros() { document.getElementById('modal-ahorros').classList.remove('show'); }
+function renderModalAhorros(meses) {
+  if (!meses || !meses.length) return;
+  const conAhorros = meses.filter(m => m.ahorroJuaco || m.ahorroJose || m.ahorroFamiliar);
+  const el = document.getElementById('modal-ahorros-content');
+  if (!conAhorros.length) {
+    el.innerHTML = '<div style="text-align:center;padding:32px;color:var(--ink3);font-size:14px">No hay datos de ahorro registrados</div>';
+    return;
+  }
+  const maxSueldo = Math.max(...conAhorros.map(m => Math.max(m.sueldoJuaco||0, m.sueldoJose||0)), 1);
+  el.innerHTML = conAhorros.slice().reverse().map(mes => {
+    const afam   = mes.ahorroFamiliar || 0;
+    const ajuaco = mes.ahorroJuaco || 0;
+    const ajose  = mes.ahorroJose  || 0;
+    const sjuaco = mes.sueldoJuaco || 0;
+    const sjose  = mes.sueldoJose  || 0;
+    const pjuaco = sjuaco > 0 ? Math.round(ajuaco/sjuaco*100) : 0;
+    const pjose  = sjose  > 0 ? Math.round(ajose/sjose*100)   : 0;
+    const pjuacoBar = sjuaco > 0 ? Math.min(100, pjuaco) : Math.min(100, ajuaco/maxSueldo*100);
+    const pjoseBar  = sjose  > 0 ? Math.min(100, pjose)  : Math.min(100, ajose/maxSueldo*100);
+    return '<div style="padding:14px 0;border-bottom:1px solid var(--border)">'
+      + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">'
+      + '<div style="font-size:13px;font-weight:700;color:var(--ink)">' + mes.nombre + '</div>'
+      + '<div style="font-size:15px;font-weight:700;color:var(--green)">' + fmtCLP(afam*1000) + '</div>'
+      + '</div>'
+      + (ajuaco ? '<div style="margin-bottom:6px"><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--ink3)"><span>Juaco</span><span style="color:var(--green)">' + fmtCLP(ajuaco*1000) + (pjuaco?' · '+pjuaco+'%':'') + '</span></div><div class="ahorro-bar-track"><div class="ahorro-bar-fill" style="width:' + pjuacoBar + '%"></div></div></div>' : '')
+      + (ajose  ? '<div><div style="display:flex;justify-content:space-between;font-size:12px;color:var(--ink3)"><span>Jose</span><span style="color:var(--green)">' + fmtCLP(ajose*1000) + (pjose?' · '+pjose+'%':'') + '</span></div><div class="ahorro-bar-track"><div class="ahorro-bar-fill" style="width:' + pjoseBar + '%"></div></div></div>' : '')
+      + '</div>';
+  }).join('');
+}
 
-</script><style>
+</script>
+<style>
 :root {
   --bg:      #0A0A0F;
   --bg2:     #111118;
@@ -254,6 +291,9 @@ input[type=file]{display:none}
 ::-webkit-scrollbar{width:0;background:transparent}
 
 
+/* MODAL AHORROS */
+.ahorro-bar-track{height:8px;background:var(--card2);border-radius:4px;overflow:hidden;margin:4px 0}
+.ahorro-bar-fill{height:100%;border-radius:4px;background:var(--green);transition:width 0.7s cubic-bezier(.4,0,.2,1)}
 /* MODAL 12M */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:500;display:none;align-items:flex-end;justify-content:center}
 .modal-overlay.show{display:flex}
@@ -1096,7 +1136,8 @@ try {
     renderDashboard(data);
   } catch(e) {
     // Demo data when script not connected
-    renderDashboard(getDemoMetrics());
+    _dashData = getDemoMetrics();
+    renderDashboard(_dashData);
   }
  }
 function getDemoMetrics() {
@@ -1121,16 +1162,23 @@ function getDemoMetrics() {
 
 function renderDashboard(d) {
   const m = d.mesActual;
-  const maxMes = Math.max(...d.ultimosMeses.map(x=>x.total));
-  const maxCat = Math.max(...Object.values(d.porCategoria));
-  const totalPersonas = m.juaco + m.jose + m.ambos;
+  const maxCat = Math.max(...Object.values(d.porCategoria), 1);
+  const totalPersonas = (m.totalJuaco || m.juaco || 0) + (m.totalJose || m.jose || 0) + (m.ambos || 0);
+  const juacoVal = m.totalJuaco || m.juaco || 0;
+  const joseVal  = m.totalJose  || m.jose  || 0;
+  const ambosVal = m.ambos || 0;
+  const ahorroJuaco = m.ahorroJuaco || 0;
+  const ahorroJose  = m.ahorroJose  || 0;
+  const sueldoJuaco = m.sueldoJuaco || 0;
+  const sueldoJose  = m.sueldoJose  || 0;
+  const pctJuaco = sueldoJuaco > 0 ? Math.round(ahorroJuaco / sueldoJuaco * 100) : 0;
+  const pctJose  = sueldoJose  > 0 ? Math.round(ahorroJose  / sueldoJose  * 100) : 0;
+  const ultimos5 = (d.historial || []).slice(0, 5);
 
   document.getElementById('dash-period').textContent = m.nombre;
-
   const catColors = {fijos:'var(--ink)',super:'var(--accent)',delivery:'#E67E22',nana:'#8E44AD',otro:'var(--ink3)'};
 
   document.getElementById('dashboard-content').innerHTML = `
-    <!-- Total mes -->
     <div class="metric-grid">
       <div class="metric full">
         <div class="metric-label">Gasto total ${m.nombre}</div>
@@ -1142,37 +1190,48 @@ function renderDashboard(d) {
         <div class="metric-val sm">${fmtCLP(d.promedio12 * 1000)}</div>
         <div class="metric-sub" style="color:var(--accent)">ver detalle →</div>
       </div>
-      <div class="metric">
-        <div class="metric-label">Gastos este mes</div>
-<div class="metric-val sm">${d.totalMovimientos || d.topGastos?.length || '—'}</div>
-<div class="metric-sub">movimientos</div>
+      <div class="metric" style="cursor:pointer" onclick="abrirModalAhorros()">
+        <div class="metric-label">Ahorro familiar ↗</div>
+        <div class="metric-val sm" style="color:var(--green)">${fmtCLP((m.ahorroFamiliar || 0) * 1000)}</div>
+        <div class="metric-sub" style="color:var(--green)">ver detalle →</div>
       </div>
     </div>
 
-    <!-- Split Juaco / Jose -->
+    <div class="metric-grid" style="margin-bottom:12px">
+      <div class="metric">
+        <div class="metric-label">Ahorro Juaco</div>
+        <div class="metric-val sm" style="color:${ahorroJuaco>0?'var(--green)':'var(--ink3)'}">${fmtCLP(ahorroJuaco * 1000)}</div>
+        <div class="metric-sub">${pctJuaco > 0 ? pctJuaco + '% del sueldo' : 'sin dato'}</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Ahorro Jose</div>
+        <div class="metric-val sm" style="color:${ahorroJose>0?'var(--green)':'var(--ink3)'}">${fmtCLP(ahorroJose * 1000)}</div>
+        <div class="metric-sub">${pctJose > 0 ? pctJose + '% del sueldo' : 'sin dato'}</div>
+      </div>
+    </div>
+
     <div class="card">
       <div class="card-title">Distribución del mes</div>
       <div class="split-row">
         <div class="split-name">Ambos</div>
-        <div class="split-bar-wrap"><div class="split-bar-bg"><div class="split-bar-fg" style="width:${(m.ambos/totalPersonas*100).toFixed(0)}%;background:var(--ink)"></div></div></div>
-        <div class="split-amount">${fmtCLP(m.ambos*1000)}</div>
-        <div class="split-pct">${(m.ambos/totalPersonas*100).toFixed(0)}%</div>
+        <div class="split-bar-wrap"><div class="split-bar-bg"><div class="split-bar-fg" style="width:${totalPersonas?((ambosVal/totalPersonas)*100).toFixed(0):0}%;background:var(--ink)"></div></div></div>
+        <div class="split-amount">${fmtCLP(ambosVal*1000)}</div>
+        <div class="split-pct">${totalPersonas?((ambosVal/totalPersonas)*100).toFixed(0):0}%</div>
       </div>
       <div class="split-row">
         <div class="split-name">Juaco</div>
-        <div class="split-bar-wrap"><div class="split-bar-bg"><div class="split-bar-fg" style="width:${(m.juaco/totalPersonas*100).toFixed(0)}%;background:var(--accent)"></div></div></div>
-        <div class="split-amount">${fmtCLP(m.juaco*1000)}</div>
-        <div class="split-pct">${(m.juaco/totalPersonas*100).toFixed(0)}%</div>
+        <div class="split-bar-wrap"><div class="split-bar-bg"><div class="split-bar-fg" style="width:${totalPersonas?((juacoVal/totalPersonas)*100).toFixed(0):0}%;background:var(--accent)"></div></div></div>
+        <div class="split-amount">${fmtCLP(juacoVal*1000)}</div>
+        <div class="split-pct">${totalPersonas?((juacoVal/totalPersonas)*100).toFixed(0):0}%</div>
       </div>
       <div class="split-row">
         <div class="split-name">Jose</div>
-        <div class="split-bar-wrap"><div class="split-bar-bg"><div class="split-bar-fg" style="width:${(m.jose/totalPersonas*100).toFixed(0)}%;background:var(--green)"></div></div></div>
-        <div class="split-amount">${fmtCLP(m.jose*1000)}</div>
-        <div class="split-pct">${(m.jose/totalPersonas*100).toFixed(0)}%</div>
+        <div class="split-bar-wrap"><div class="split-bar-bg"><div class="split-bar-fg" style="width:${totalPersonas?((joseVal/totalPersonas)*100).toFixed(0):0}%;background:var(--green)"></div></div></div>
+        <div class="split-amount">${fmtCLP(joseVal*1000)}</div>
+        <div class="split-pct">${totalPersonas?((joseVal/totalPersonas)*100).toFixed(0):0}%</div>
       </div>
     </div>
 
-    <!-- Por categoría -->
     <div class="card">
       <div class="card-title">Por categoría</div>
       <div class="bar-chart">
@@ -1185,26 +1244,30 @@ function renderDashboard(d) {
       </div>
     </div>
 
-    <!-- Últimos meses -->
     <div class="card">
-      <div class="card-title">Últimos meses</div>
-      <div class="month-list">
-        ${d.ultimosMeses.map(mes=>`
-          <div class="month-item">
-            <div class="month-name">${mes.nombre}</div>
-            <div class="month-bar"><div class="month-bar-fill" style="width:${(mes.total/maxMes*100).toFixed(0)}%"></div></div>
-            <div class="month-val">${fmtCLP(mes.total*1000)}</div>
-          </div>`).join('')}
+      <div class="card-title">Últimos movimientos</div>
+      <div class="tx-list">
+        ${ultimos5.length ? ultimos5.map(g=>`
+          <div class="tx">
+            <div class="tx-icon" style="background:var(--card2)">${CAT_EMOJI[String(g.cat||'').toLowerCase()]||'💳'}</div>
+            <div class="tx-body">
+              <div class="tx-name">${g.concepto || g.comercio || '—'}</div>
+              <div class="tx-meta">Día ${g.dia||'?'} · ${g.de||''} · ${g.quien||''}</div>
+            </div>
+            <div>
+              <div class="tx-amount">${fmtCLP((parseFloat(g.monto)||0)*1000)}</div>
+              <div class="tx-cat">${g.cat||'otro'}</div>
+            </div>
+          </div>`).join('') : '<div style="text-align:center;padding:16px;color:var(--ink3);font-size:13px">Sin movimientos</div>'}
       </div>
     </div>
 
-    <!-- Top gastos -->
     <div class="card">
       <div class="card-title">Top gastos del mes</div>
       <div class="tx-list">
         ${(d.topGastos||[]).map(g=>`
           <div class="tx">
-            <div class="tx-icon" style="background:var(--paper)">${CAT_EMOJI[g.cat]||'💳'}</div>
+            <div class="tx-icon" style="background:var(--card2)">${CAT_EMOJI[g.cat]||'💳'}</div>
             <div class="tx-body"><div class="tx-name">${g.comercio}</div><div class="tx-meta">${g.cat}</div></div>
             <div class="tx-amount">${fmtCLP(g.monto*1000)}</div>
           </div>`).join('')}
@@ -1212,6 +1275,7 @@ function renderDashboard(d) {
     </div>
     <div class="pb"></div>`;
 }
+
 
 // ── Autocomplete ──────────────────────────────────────────────
 function onComercioChange() {
@@ -1380,6 +1444,17 @@ function sugerirDe(c) {
       <button class="modal-close" onclick="cerrarModal12m()">×</button>
     </div>
     <div id="modal-12m-content" style="padding:0 16px"></div>
+  </div>
+</div>
+<!-- MODAL: AHORROS DETALLE -->
+<div class="modal-overlay" id="modal-ahorros" onclick="if(event.target===this)cerrarModalAhorros()">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-header">
+      <div class="modal-title">Ahorro <em style="color:var(--green);font-style:italic">histórico</em></div>
+      <button class="modal-close" onclick="cerrarModalAhorros()">×</button>
+    </div>
+    <div id="modal-ahorros-content" style="padding:0 16px"></div>
   </div>
 </div>
 </body></html>
