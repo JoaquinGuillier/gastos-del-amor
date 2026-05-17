@@ -1,12 +1,11 @@
-
 <!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
+<!-- saved from url=(0045)file:///C:/Users/joaqu/Downloads/index_1.html -->
+<html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Gastos del Amor</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<link href="./Gastos del Amor_files/css2" rel="stylesheet">
+<script src="./Gastos del Amor_files/xlsx.full.min.js.download"></script>
 <style>
 :root {
   --ink: #111111;
@@ -208,20 +207,20 @@ input[type=file]{display:none}
 
 <!-- NAV -->
 <nav class="nav">
-  <button class="nav-btn active" onclick="showScreen('s-registro')" id="nb-registro">
-    <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Registrar
+  <button class="nav-btn active" onclick="showScreen(&#39;s-registro&#39;)" id="nb-registro">
+    <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg>Registrar
   </button>
-  <button class="nav-btn" onclick="showScreen('s-santander')" id="nb-santander">
-    <svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><path d="M2 10h20"/></svg>Santander
+  <button class="nav-btn" onclick="showScreen(&#39;s-santander&#39;)" id="nb-santander">
+    <svg viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"></rect><path d="M2 10h20"></path></svg>Santander
   </button>
-  <button class="nav-btn" onclick="showScreen('s-dashboard')" id="nb-dashboard">
-    <svg viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>Métricas
+  <button class="nav-btn" onclick="showScreen(&#39;s-dashboard&#39;)" id="nb-dashboard">
+    <svg viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"></path></svg>Métricas
   </button>
-  <button class="nav-btn" onclick="showScreen('s-historial')" id="nb-historial">
-    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Historial
+  <button class="nav-btn" onclick="showScreen(&#39;s-historial&#39;)" id="nb-historial">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>Historial
   </button>
-  <button class="nav-btn" onclick="showScreen('s-config')" id="nb-config">
-    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Config
+  <button class="nav-btn" onclick="showScreen(&#39;s-config&#39;)" id="nb-config">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>Config
   </button>
 </nav>
 
@@ -236,14 +235,14 @@ input[type=file]{display:none}
 
   <!-- Tabs -->
   <div class="tab-row">
-    <button class="tab on" onclick="setRegTab('foto',this)">📷 Foto boleta</button>
-    <button class="tab" onclick="setRegTab('manual',this)">✏️ Manual</button>
+    <button class="tab on" onclick="setRegTab(&#39;foto&#39;,this)">📷 Foto boleta</button>
+    <button class="tab" onclick="setRegTab(&#39;manual&#39;,this)">✏️ Manual</button>
   </div>
 
   <!-- FOTO TAB -->
   <div id="tab-foto">
-    <div class="cam-zone" id="camZone" onclick="document.getElementById('fi-boleta').click()">
-      <div class="cam-icon"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div>
+    <div class="cam-zone" id="camZone" onclick="document.getElementById(&#39;fi-boleta&#39;).click()">
+      <div class="cam-icon"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg></div>
       <div class="cam-label">Fotografiar boleta</div>
       <div class="cam-sub">Toca para abrir cámara o galería</div>
     </div>
@@ -280,35 +279,35 @@ input[type=file]{display:none}
       <div class="field">
         <label>¿De quién?</label>
         <div class="tg-group" id="tg-de">
-          <button class="tg on red" onclick="setTg('de','ambos',this)">Ambos</button>
-          <button class="tg" onclick="setTg('de','juaco',this)">Juaco</button>
-          <button class="tg" onclick="setTg('de','jose',this)">Jose</button>
-          <button class="tg" onclick="setTg('de','mitad',this)">Mitad</button>
+          <button class="tg on red" onclick="setTg(&#39;de&#39;,&#39;ambos&#39;,this)">Ambos</button>
+          <button class="tg" onclick="setTg(&#39;de&#39;,&#39;juaco&#39;,this)">Juaco</button>
+          <button class="tg" onclick="setTg(&#39;de&#39;,&#39;jose&#39;,this)">Jose</button>
+          <button class="tg" onclick="setTg(&#39;de&#39;,&#39;mitad&#39;,this)">Mitad</button>
         </div>
       </div>
       <div class="field">
         <label>Tipo</label>
         <div class="tg-group" id="tg-cat">
-          <button class="tg" onclick="setTg('cat','fijos',this)">Fijos</button>
-          <button class="tg on red" onclick="setTg('cat','super',this)">Super</button>
-          <button class="tg" onclick="setTg('cat','delivery',this)">Delivery</button>
-          <button class="tg" onclick="setTg('cat','nana',this)">Nana</button>
-          <button class="tg" onclick="setTg('cat','otro',this)">Otro</button>
+          <button class="tg" onclick="setTg(&#39;cat&#39;,&#39;fijos&#39;,this)">Fijos</button>
+          <button class="tg on red" onclick="setTg(&#39;cat&#39;,&#39;super&#39;,this)">Super</button>
+          <button class="tg" onclick="setTg(&#39;cat&#39;,&#39;delivery&#39;,this)">Delivery</button>
+          <button class="tg" onclick="setTg(&#39;cat&#39;,&#39;nana&#39;,this)">Nana</button>
+          <button class="tg" onclick="setTg(&#39;cat&#39;,&#39;otro&#39;,this)">Otro</button>
         </div>
       </div>
       <div class="field">
         <label>Banco</label>
         <div class="tg-group" id="tg-banco">
-          <button class="tg on red" onclick="setTg('banco','Santander',this)">Santander</button>
-          <button class="tg" onclick="setTg('banco','Banco de Chile',this)">Bco. Chile</button>
-          <button class="tg" onclick="setTg('banco','Otro',this)">Otro</button>
+          <button class="tg on red" onclick="setTg(&#39;banco&#39;,&#39;Santander&#39;,this)">Santander</button>
+          <button class="tg" onclick="setTg(&#39;banco&#39;,&#39;Banco de Chile&#39;,this)">Bco. Chile</button>
+          <button class="tg" onclick="setTg(&#39;banco&#39;,&#39;Otro&#39;,this)">Otro</button>
         </div>
       </div>
       <div class="field">
         <label>Persona</label>
         <div class="tg-group" id="tg-quien">
-          <button class="tg on red" onclick="setTg('quien','juaco',this)">Juaco</button>
-          <button class="tg" onclick="setTg('quien','josefina',this)">Josefina</button>
+          <button class="tg on red" onclick="setTg(&#39;quien&#39;,&#39;juaco&#39;,this)">Juaco</button>
+          <button class="tg" onclick="setTg(&#39;quien&#39;,&#39;josefina&#39;,this)">Josefina</button>
         </div>
       </div>
     </div>
@@ -318,7 +317,7 @@ input[type=file]{display:none}
     </div>
 
     <div id="reg-error" class="banner error" style="display:none">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
       <span id="reg-error-txt">Completa todos los campos</span>
     </div>
 
@@ -331,7 +330,7 @@ input[type=file]{display:none}
 
   <!-- SUCCESS -->
   <div class="success-screen" id="reg-success">
-    <div class="check-ring"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+    <div class="check-ring"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg></div>
     <div class="s-title">¡Registrado! 💕</div>
     <div class="s-amount" id="suc-amount"></div>
     <div class="s-detail" id="suc-detail"></div>
@@ -351,14 +350,14 @@ input[type=file]{display:none}
   </div>
 
   <div class="tab-row">
-    <button class="tab on" onclick="setSanTab('comprobante',this)">🧾 Comprobante</button>
-    <button class="tab" onclick="setSanTab('estado',this)">📋 Estado de cuenta</button>
+    <button class="tab on" onclick="setSanTab(&#39;comprobante&#39;,this)">🧾 Comprobante</button>
+    <button class="tab" onclick="setSanTab(&#39;estado&#39;,this)">📋 Estado de cuenta</button>
   </div>
 
   <!-- COMPROBANTE -->
   <div id="san-comprobante">
-    <div class="cam-zone" id="camZone2" onclick="document.getElementById('fi-comprobante').click()">
-      <div class="cam-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg></div>
+    <div class="cam-zone" id="camZone2" onclick="document.getElementById(&#39;fi-comprobante&#39;).click()">
+      <div class="cam-icon"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg></div>
       <div class="cam-label">Foto de comprobante</div>
       <div class="cam-sub">Toca para abrir cámara o galería</div>
     </div>
@@ -371,11 +370,8 @@ input[type=file]{display:none}
 
   <!-- ESTADO DE CUENTA -->
   <div id="san-estado" style="display:none">
-    <div class="upload-zone" id="uploadZone" onclick="document.getElementById('fi-excel').click()"
-      ondragover="event.preventDefault();this.classList.add('drag')"
-      ondragleave="this.classList.remove('drag')"
-      ondrop="handleDrop(event)">
-      <div class="upload-icon"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+    <div class="upload-zone" id="uploadZone" onclick="document.getElementById(&#39;fi-excel&#39;).click()" ondragover="event.preventDefault();this.classList.add(&#39;drag&#39;)" ondragleave="this.classList.remove(&#39;drag&#39;)" ondrop="handleDrop(event)">
+      <div class="upload-icon"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg></div>
       <div style="font-size:15px;font-weight:600;color:var(--ink)">Subir estado de cuenta</div>
       <div style="font-size:13px;color:var(--ink3)">Excel (.xlsx) o arrastra aquí</div>
     </div>
@@ -437,8 +433,8 @@ input[type=file]{display:none}
     <div class="config-field">
       <label>¿Quién usa esta app?</label>
       <div class="tg-group">
-        <button class="tg on red" id="cfg-juaco" onclick="setQuien('juaco')">Juaco</button>
-        <button class="tg" id="cfg-jose" onclick="setQuien('josefina')">Josefina</button>
+        <button class="tg on red" id="cfg-juaco" onclick="setQuien(&#39;juaco&#39;)">Juaco</button>
+        <button class="tg" id="cfg-jose" onclick="setQuien(&#39;josefina&#39;)">Josefina</button>
       </div>
     </div>
   </div>
@@ -465,13 +461,13 @@ input[type=file]{display:none}
   </div>
 
   <div class="hist-filter">
-    <button class="tab on" onclick="setHistFilter('todos',this)">Todos</button>
-    <button class="tab" onclick="setHistFilter('juaco',this)">Juaco</button>
-    <button class="tab" onclick="setHistFilter('jose',this)">Jose</button>
-    <button class="tab" onclick="setHistFilter('ambos',this)">Ambos</button>
-    <button class="tab" onclick="setHistFilter('fijos',this)">Fijos</button>
-    <button class="tab" onclick="setHistFilter('super',this)">Super</button>
-    <button class="tab" onclick="setHistFilter('delivery',this)">Delivery</button>
+    <button class="tab on" onclick="setHistFilter(&#39;todos&#39;,this)">Todos</button>
+    <button class="tab" onclick="setHistFilter(&#39;juaco&#39;,this)">Juaco</button>
+    <button class="tab" onclick="setHistFilter(&#39;jose&#39;,this)">Jose</button>
+    <button class="tab" onclick="setHistFilter(&#39;ambos&#39;,this)">Ambos</button>
+    <button class="tab" onclick="setHistFilter(&#39;fijos&#39;,this)">Fijos</button>
+    <button class="tab" onclick="setHistFilter(&#39;super&#39;,this)">Super</button>
+    <button class="tab" onclick="setHistFilter(&#39;delivery&#39;,this)">Delivery</button>
   </div>
 
   <div id="hist-content" style="padding:0 16px">
@@ -1149,7 +1145,8 @@ async function loadHistorial() {
   </div>`;
 
   try {
-    const r = await fetch(`${S.scriptUrl}?action=metrics&sheetId=${S.sheetId}`);
+    const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(S.scriptUrl + '?action=metrics&sheetId=' + S.sheetId);
+    const r = await fetch(proxyUrl);
     const data = await r.json();
     historialData = data.historial || [];
     S.comerciosHistorial = data.comerciosHistorial || {};
@@ -1245,5 +1242,6 @@ function sugerirDe(c) {
   return 'ambos';
 }
 </script>
-</body>
-</html>
+
+
+</body></html>
