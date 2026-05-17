@@ -20,7 +20,7 @@ function cerrarModal12m() {
 }
 function renderModal12m(meses, promedio12) {
   if (!meses || !meses.length) return;
-  const cats = ['fijos','super','delivery','nana','otro'];
+  const cats = ['otro','delivery','super','nana','fijos'];
   const maxTotal = Math.max(...meses.map(m => m.total), 1);
   let colsHTML = '', labelsHTML = '';
   meses.forEach((mes, i) => {
@@ -32,7 +32,7 @@ function renderModal12m(meses, promedio12) {
       const pct = total > 0 ? (val / total * 100).toFixed(1) : 0;
       segsHTML += '<div class="stacked-seg" style="height:' + pct + '%;background:' + CAT_COLORS[cat] + '"></div>';
     });
-    colsHTML += '<div class="stacked-col" style="height:' + heightPct + '%" onclick="mostrarTooltip12m(' + i + ')">' + segsHTML + '</div>';
+    colsHTML += '<div class="stacked-col" style="height:' + heightPct + '%" onmouseover="mostrarTooltip12m(' + i + ')" onclick="mostrarTooltip12m(' + i + ')">' + segsHTML + '</div>';
     labelsHTML += '<div class="stacked-label">' + mes.nombre.split(' ')[0] + '</div>';
   });
   const legendHTML = cats.map(cat => '<div class="stacked-legend-item"><div class="stacked-legend-dot" style="background:' + CAT_COLORS[cat] + '"></div>' + cat + '</div>').join('');
@@ -43,7 +43,7 @@ function renderModal12m(meses, promedio12) {
 function mostrarTooltip12m(idx) {
   const mes = window._meses12m[idx];
   if (!mes) return;
-  const cats = ['fijos','super','delivery','nana','otro'];
+  const cats = ['fijos','nana','super','delivery','otro'];
   const tooltip = document.getElementById('stacked-tooltip');
   const rows = cats.map(cat => {
     const val = mes['cat_' + cat] || 0;
@@ -1386,7 +1386,7 @@ function cerrarModal12m() {
 }
 function renderModal12m(meses, promedio12) {
   if (!meses || !meses.length) return;
-  const cats = ['fijos','super','delivery','nana','otro'];
+  const cats = ['otro','delivery','super','nana','fijos'];
   const maxTotal = Math.max(...meses.map(m => m.total), 1);
   let colsHTML = '', labelsHTML = '';
   meses.forEach((mes, i) => {
@@ -1398,7 +1398,7 @@ function renderModal12m(meses, promedio12) {
       const pct = total > 0 ? (val / total * 100).toFixed(1) : 0;
       segsHTML += '<div class="stacked-seg" style="height:' + pct + '%;background:' + CAT_COLORS[cat] + '"></div>';
     });
-    colsHTML += '<div class="stacked-col" style="height:' + heightPct + '%" onclick="mostrarTooltip12m(' + i + ')">' + segsHTML + '</div>';
+    colsHTML += '<div class="stacked-col" style="height:' + heightPct + '%" onmouseover="mostrarTooltip12m(' + i + ')" onclick="mostrarTooltip12m(' + i + ')">' + segsHTML + '</div>';
     labelsHTML += '<div class="stacked-label">' + mes.nombre.split(' ')[0] + '</div>';
   });
   const legendHTML = cats.map(cat => '<div class="stacked-legend-item"><div class="stacked-legend-dot" style="background:' + CAT_COLORS[cat] + '"></div>' + cat + '</div>').join('');
@@ -1409,7 +1409,7 @@ function renderModal12m(meses, promedio12) {
 function mostrarTooltip12m(idx) {
   const mes = window._meses12m[idx];
   if (!mes) return;
-  const cats = ['fijos','super','delivery','nana','otro'];
+  const cats = ['fijos','nana','super','delivery','otro'];
   const tooltip = document.getElementById('stacked-tooltip');
   const rows = cats.map(cat => {
     const val = mes['cat_' + cat] || 0;
