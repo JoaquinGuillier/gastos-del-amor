@@ -966,11 +966,7 @@ async function loadDashboard() {
   content.innerHTML = `<div style="padding:40px;text-align:center"><div class="spin" style="margin:0 auto"></div><div style="font-size:13px;color:var(--ink3);margin-top:12px">Cargando datos...</div></div>`;
 
  try {
-    const r = await fetch(`${S.scriptUrl}?action=metrics&sheetId=${S.sheetId}`, {
-      method: 'GET',
-      redirect: 'follow',
-      mode: 'cors'
-    });
+    const r = await fetch(`https://corsproxy.io/?${encodeURIComponent(S.scriptUrl + '?action=metrics&sheetId=' + S.sheetId)}`);
     const data = await r.json();
     S.comerciosHistorial = data.comerciosHistorial || {};
     renderDashboard(data);
