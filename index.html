@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <!-- saved from url=(0045)file:///C:/Users/joaqu/Downloads/index_2.html -->
 <html lang="es"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -5,19 +6,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Gastos del Amor</title>
 <link href="./index_files/css2" rel="stylesheet">
-<script src="./index_files/xlsx.full.min.js.download">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js">
 // ── MODAL 12 MESES ────────────────────────────────────────────
 let _dashData = null;
 const CAT_COLORS = {fijos:'#F0EEF8',super:'#E8637A',delivery:'#E67E22',nana:'#8E44AD',otro:'#5E5A78'};
-
 function abrirModal12m() {
   if (!_dashData) return;
   renderModal12m(_dashData.ultimosMeses, _dashData.promedio12);
   document.getElementById('modal-12m').classList.add('show');
 }
-function cerrarModal12m() {
-  document.getElementById('modal-12m').classList.remove('show');
-}
+function cerrarModal12m() { document.getElementById('modal-12m').classList.remove('show'); }
 function renderModal12m(meses, promedio12) {
   if (!meses || !meses.length) return;
   const cats = ['otro','delivery','super','nana','fijos'];
@@ -36,8 +34,7 @@ function renderModal12m(meses, promedio12) {
     labelsHTML += '<div class="stacked-label">' + mes.nombre.split(' ')[0] + '</div>';
   });
   const legendHTML = cats.map(cat => '<div class="stacked-legend-item"><div class="stacked-legend-dot" style="background:' + CAT_COLORS[cat] + '"></div>' + cat + '</div>').join('');
-  const el = document.getElementById('modal-12m-content');
-  el.innerHTML = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px"><div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center"><div style="font-size:10px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:6px">Promedio 12m</div><div style="font-family:DM Serif Display,serif;font-size:20px;color:var(--ink)">' + fmtCLP(promedio12 * 1000) + '</div></div><div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center"><div style="font-size:10px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:6px">Meses</div><div style="font-family:DM Serif Display,serif;font-size:20px;color:var(--ink)">' + meses.length + '</div></div></div><div class="stacked-chart"><div class="stacked-col-wrap">' + colsHTML + '</div><div class="stacked-labels">' + labelsHTML + '</div><div class="stacked-legend">' + legendHTML + '</div><div class="stacked-tooltip" id="stacked-tooltip"></div></div>';
+  document.getElementById('modal-12m-content').innerHTML = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px"><div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center"><div style="font-size:10px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:6px">Promedio 12m</div><div style="font-family:DM Serif Display,serif;font-size:20px;color:var(--ink)">' + fmtCLP(promedio12 * 1000) + '</div></div><div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center"><div style="font-size:10px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:6px">Meses</div><div style="font-family:DM Serif Display,serif;font-size:20px;color:var(--ink)">' + meses.length + '</div></div></div><div class="stacked-chart"><div class="stacked-col-wrap">' + colsHTML + '</div><div class="stacked-labels">' + labelsHTML + '</div><div class="stacked-legend">' + legendHTML + '</div><div class="stacked-tooltip" id="stacked-tooltip"></div></div>';
   window._meses12m = meses;
 }
 function mostrarTooltip12m(idx) {
@@ -53,8 +50,8 @@ function mostrarTooltip12m(idx) {
   tooltip.innerHTML = '<div style="font-size:12px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:8px">' + mes.nombre + '</div>' + rows + '<div style="display:flex;justify-content:space-between;padding-top:8px"><span style="font-size:13px;font-weight:700;color:var(--ink)">Total</span><span style="font-size:14px;font-weight:700;color:var(--accent)">' + fmtCLP(mes.total * 1000) + '</span></div>';
   tooltip.classList.add('show');
 }
-</script>
-<style>
+
+</script><style>
 :root {
   --bg:      #0A0A0F;
   --bg2:     #111118;
@@ -1099,8 +1096,7 @@ try {
     renderDashboard(data);
   } catch(e) {
     // Demo data when script not connected
-    _dashData = getDemoMetrics();
-    renderDashboard(_dashData);
+    renderDashboard(getDemoMetrics());
   }
  }
 function getDemoMetrics() {
@@ -1370,54 +1366,6 @@ function sugerirCat(c) {
 function sugerirDe(c) {
   for (const [k,v] of Object.entries(PATRONES_DE)) if (c.includes(k)) return v;
   return 'ambos';
-}
-
-// ── MODAL 12 MESES ────────────────────────────────────────────
-let _dashData = null;
-const CAT_COLORS = {fijos:'#F0EEF8',super:'#E8637A',delivery:'#E67E22',nana:'#8E44AD',otro:'#5E5A78'};
-
-function abrirModal12m() {
-  if (!_dashData) return;
-  renderModal12m(_dashData.ultimosMeses, _dashData.promedio12);
-  document.getElementById('modal-12m').classList.add('show');
-}
-function cerrarModal12m() {
-  document.getElementById('modal-12m').classList.remove('show');
-}
-function renderModal12m(meses, promedio12) {
-  if (!meses || !meses.length) return;
-  const cats = ['otro','delivery','super','nana','fijos'];
-  const maxTotal = Math.max(...meses.map(m => m.total), 1);
-  let colsHTML = '', labelsHTML = '';
-  meses.forEach((mes, i) => {
-    const total = mes.total || 0;
-    const heightPct = (total / maxTotal * 100).toFixed(1);
-    let segsHTML = '';
-    cats.forEach(cat => {
-      const val = mes['cat_' + cat] || 0;
-      const pct = total > 0 ? (val / total * 100).toFixed(1) : 0;
-      segsHTML += '<div class="stacked-seg" style="height:' + pct + '%;background:' + CAT_COLORS[cat] + '"></div>';
-    });
-    colsHTML += '<div class="stacked-col" style="height:' + heightPct + '%" onmouseover="mostrarTooltip12m(' + i + ')" onclick="mostrarTooltip12m(' + i + ')">' + segsHTML + '</div>';
-    labelsHTML += '<div class="stacked-label">' + mes.nombre.split(' ')[0] + '</div>';
-  });
-  const legendHTML = cats.map(cat => '<div class="stacked-legend-item"><div class="stacked-legend-dot" style="background:' + CAT_COLORS[cat] + '"></div>' + cat + '</div>').join('');
-  const el = document.getElementById('modal-12m-content');
-  el.innerHTML = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px"><div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center"><div style="font-size:10px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:6px">Promedio 12m</div><div style="font-family:DM Serif Display,serif;font-size:20px;color:var(--ink)">' + fmtCLP(promedio12 * 1000) + '</div></div><div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center"><div style="font-size:10px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:6px">Meses</div><div style="font-family:DM Serif Display,serif;font-size:20px;color:var(--ink)">' + meses.length + '</div></div></div><div class="stacked-chart"><div class="stacked-col-wrap">' + colsHTML + '</div><div class="stacked-labels">' + labelsHTML + '</div><div class="stacked-legend">' + legendHTML + '</div><div class="stacked-tooltip" id="stacked-tooltip"></div></div>';
-  window._meses12m = meses;
-}
-function mostrarTooltip12m(idx) {
-  const mes = window._meses12m[idx];
-  if (!mes) return;
-  const cats = ['fijos','nana','super','delivery','otro'];
-  const tooltip = document.getElementById('stacked-tooltip');
-  const rows = cats.map(cat => {
-    const val = mes['cat_' + cat] || 0;
-    if (!val) return '';
-    return '<div style="display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid var(--border)"><div style="display:flex;align-items:center;gap:6px"><div style="width:8px;height:8px;border-radius:2px;background:' + CAT_COLORS[cat] + '"></div><span style="font-size:13px;color:var(--ink2)">' + cat + '</span></div><span style="font-size:13px;font-weight:600;color:var(--ink)">' + fmtCLP(val * 1000) + '</span></div>';
-  }).join('');
-  tooltip.innerHTML = '<div style="font-size:12px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:8px">' + mes.nombre + '</div>' + rows + '<div style="display:flex;justify-content:space-between;padding-top:8px"><span style="font-size:13px;font-weight:700;color:var(--ink)">Total</span><span style="font-size:14px;font-weight:700;color:var(--accent)">' + fmtCLP(mes.total * 1000) + '</span></div>';
-  tooltip.classList.add('show');
 }
 </script>
 
