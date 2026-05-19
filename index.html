@@ -270,8 +270,8 @@ input[type=file]{display:none}
   <div id="tab-foto">
     <div class="cam-zone" id="camZone" onclick="document.getElementById('fi-boleta').click()">
       <div class="cam-icon"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg></div>
-      <div class="cam-label">Fotografiar boleta</div>
-      <div class="cam-sub">Toca para abrir cámara o galería</div>
+      <div class="cam-label">Subir imagen de referencia</div>
+      <div class="cam-sub">Pantallazo del push, foto de boleta...</div>
     </div>
     <input type="file" id="fi-boleta" accept="image/*" capture="environment" onchange="handleBoleta(this)">
     <div class="analyzing" id="analyzing">
@@ -676,18 +676,12 @@ function setQuien(q) {
 async function handleBoleta(input) {
   if (!input.files?.[0]) return;
   const file = input.files[0];
-  showImgPreview('camZone', file, 'Analizando con IA...');
-  document.getElementById('analyzing').classList.add('show');
-  try {
-    const b64 = await toBase64(file);
-    const d   = await analizarImagen(b64, file.type, 'boleta');
-    document.getElementById('analyzing').classList.remove('show');
-    showRegForm(d, '📷 Detectado de la boleta');
-  } catch(e) {
-    console.error('Error analizando boleta:', e);
-    document.getElementById('analyzing').classList.remove('show');
-    showRegForm({}, '⚠️ No se pudo leer — completar manualmente');
-  }
+  showImgPreview('camZone', file, 'Imagen cargada ✓');
+  // Ir directo al formulario sin IA — foco en monto
+  showRegForm({}, null);
+  setTimeout(() => {
+    document.getElementById('f-monto').focus();
+  }, 150);
 }
 
 async function handleComprobante(input) {
@@ -890,7 +884,7 @@ function resetRegistro() {
   activateTg('de','ambos'); activateTg('cat','super');
   const zone = document.getElementById('camZone');
   zone.classList.remove('has-img');
-  zone.innerHTML = `<div class="cam-icon"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div><div class="cam-label">Fotografiar boleta</div><div class="cam-sub">Toca para abrir cámara o galería</div>`;
+  zone.innerHTML = `<div class="cam-icon"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div><div class="cam-label">Subir imagen de referencia</div><div class="cam-sub">Pantallazo del push, foto de boleta...</div>`;
   document.getElementById('fi-boleta').value = '';
 }
 
