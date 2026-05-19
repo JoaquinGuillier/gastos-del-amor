@@ -734,9 +734,13 @@ function showImgPreview(zoneId, file, overlayText) {
 
 async function analizarImagen(base64, mimeType, tipo) {
   const prompt = tipo === 'boleta'
-    ? `Analiza esta boleta/ticket chileno. Responde SOLO JSON sin backticks ni texto extra:
-{"monto":numero_sin_puntos_ni_comas,"comercio":"nombre_limpio_max_25_chars","fecha":"YYYY-MM-DD_o_null"}
-Ejemplo correcto: {"monto":38000,"comercio":"Vive Nutricion","fecha":"2026-04-13"}`
+    ? `Analiza esta imagen de pago o boleta chilena. Extrae el monto total, el comercio y la fecha.
+El monto puede aparecer como: $10.500, CLP10,500, CLP 10500, $10500, etc. Conviértelo siempre a número entero sin puntos ni comas (ejemplo: CLP10,500 → 10500, $38.000 → 38000).
+Responde SOLO JSON sin backticks ni texto extra:
+{"monto":numero_entero,"comercio":"nombre_limpio_max_25_chars","fecha":"YYYY-MM-DD_o_null"}
+Ejemplos correctos:
+- CLP10,500 en Jumbo → {"monto":10500,"comercio":"Jumbo Costanera","fecha":"2026-05-19"}
+- $38.000 en Copec → {"monto":38000,"comercio":"Copec","fecha":"2026-04-13"}`
     : `Analiza este comprobante de transferencia o pago. Responde SOLO JSON sin backticks:
 {"monto":numero_sin_puntos,"comercio":"destino_o_comercio_max_25_chars","fecha":"YYYY-MM-DD_o_null","tipo":"transferencia_o_compra"}`;
 
