@@ -692,10 +692,18 @@ async function handleBoleta(input) {
   document.getElementById('analyzing').classList.add('show');
   try {
     const b64 = await toBase64(file);
-    const d   = await analizarImagen(b64, file.type, 'boleta');
+    const mime = file.type === 'image/jpg' ? 'image/jpeg'
+               : ['image/jpeg','image/png','image/gif','image/webp'].includes(file.type) ? file.type
+               : 'image/jpeg';
+    const d = await analizarImagen(b64, mime, 'boleta');
     document.getElementById('analyzing').classList.remove('show');
-    showRegForm(d, '🧾 Detectado automáticamente');
+    if (d && d.monto) {
+      showRegForm(d, '🧾 Detectado automáticamente');
+    } else {
+      showRegForm(d || {}, '⚠️ No se detectó monto — revisa los campos');
+    }
   } catch(e) {
+    console.error('Error analizando boleta:', e);
     document.getElementById('analyzing').classList.remove('show');
     showRegForm({}, '⚠️ No se pudo leer — completar manualmente');
   }
