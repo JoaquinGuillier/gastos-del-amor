@@ -606,6 +606,23 @@ window.addEventListener('load', () => {
   }
   loadDashboard();
   loadHistorial();
+
+  // FIX: detectar parámetros en la URL para pre-llenar formulario desde email
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('comercio') || params.get('monto')) {
+    const datos = {
+      comercio: params.get('comercio') || '',
+      monto:    params.get('monto')    || '',
+      fecha:    params.get('fecha')    || today(),
+    };
+    const de  = params.get('de')  || 'ambos';
+    const cat = params.get('cat') || 'super';
+    showRegForm(datos, '📧 Desde email — edita el nombre si quieres');
+    activateTg('de', de);
+    activateTg('cat', cat);
+    // Ir a pantalla de registro
+    showScreen('s-registro');
+  }
   document.addEventListener('click', (e) => {
     if (!e.target.closest('.autocomplete-wrap')) {
       document.getElementById('autocomplete-list').classList.remove('show');
