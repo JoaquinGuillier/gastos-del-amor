@@ -688,11 +688,17 @@ function setQuien(q) {
 async function handleBoleta(input) {
   if (!input.files?.[0]) return;
   const file = input.files[0];
-  showImgPreview('camZone', file, 'Imagen cargada ✓');
-  showRegForm({}, null);
-  setTimeout(() => {
-    document.getElementById('f-monto').focus();
-  }, 150);
+  showImgPreview('camZone', file, 'Analizando con IA...');
+  document.getElementById('analyzing').classList.add('show');
+  try {
+    const b64 = await toBase64(file);
+    const d   = await analizarImagen(b64, file.type, 'boleta');
+    document.getElementById('analyzing').classList.remove('show');
+    showRegForm(d, '🧾 Detectado automáticamente');
+  } catch(e) {
+    document.getElementById('analyzing').classList.remove('show');
+    showRegForm({}, '⚠️ No se pudo leer — completar manualmente');
+  }
 }
 
 async function handleComprobante(input) {
