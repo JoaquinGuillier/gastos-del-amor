@@ -1016,7 +1016,7 @@ async function loadDashboard() {
   try {
     // FIX: enviar parámetro mes= para que el Apps Script devuelva la hoja correcta
     const url = S.scriptUrl + '?action=metrics&sheetId=' + S.sheetId + '&mes=' + encodeURIComponent(mesNombre);
-    const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(url);
+    const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
     const r = await fetch(proxyUrl);
     const data = await r.json();
     if (data.error) throw new Error(data.error);
@@ -1196,7 +1196,7 @@ async function loadHistorial() {
   content.innerHTML = `<div style="text-align:center;padding:40px"><div class="spin" style="margin:0 auto"></div><div style="font-size:13px;color:var(--ink3);margin-top:12px">Cargando...</div></div>`;
   try {
     const url = S.scriptUrl + '?action=metrics&sheetId=' + S.sheetId;
-    const proxyUrl = 'https://corsproxy.io/?' + encodeURIComponent(url);
+    const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
     const r = await fetch(proxyUrl);
     const data = await r.json();
     historialData = data.historial || [];
