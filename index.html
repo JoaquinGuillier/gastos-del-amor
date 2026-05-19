@@ -60,7 +60,6 @@ label{font-size:10px;font-weight:600;color:var(--ink3);text-transform:uppercase;
 input,select,textarea{font-family:'DM Sans',sans-serif;font-size:15px;color:var(--ink);background:var(--card2);border:1.5px solid var(--border);border-radius:12px;padding:11px 14px;width:100%;outline:none;transition:border-color 0.15s,background 0.15s;-webkit-user-select:text;user-select:text}
 input:focus,select:focus{background:var(--card2);border-color:var(--accent)}
 input::placeholder{color:var(--ink3)}
-/* FIX: asegurar que inputs nunca queden bloqueados */
 input[type=text],input[type=number],input[type=date]{pointer-events:auto !important;-webkit-user-select:text !important;user-select:text !important}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 
@@ -80,9 +79,7 @@ input[type=text],input[type=number],input[type=date]{pointer-events:auto !import
 .cam-icon svg{width:24px;height:24px;stroke:var(--accent);fill:none;stroke-width:1.8}
 .cam-label{font-size:15px;font-weight:600;color:var(--ink)}
 .cam-sub{font-size:13px;color:var(--ink3)}
-.cam-overlay{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,0.7));padding:20px 16px 14px;color:white;font-size:13px;font-weight:500;border-radius:0 0 calc(var(--r) - 2px) calc(var(--r) - 2px);
-  /* FIX: overlay nunca bloquea clicks debajo */
-  pointer-events:none}
+.cam-overlay{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,0.7));padding:20px 16px 14px;color:white;font-size:13px;font-weight:500;border-radius:0 0 calc(var(--r) - 2px) calc(var(--r) - 2px);pointer-events:none}
 
 /* UPLOAD ZONE */
 .upload-zone{background:var(--card);border:1.5px dashed var(--border2);border-radius:var(--r);padding:28px 20px;display:flex;flex-direction:column;align-items:center;gap:10px;cursor:pointer;transition:all 0.15s;margin:0 16px 12px;text-align:center}
@@ -268,12 +265,17 @@ input[type=file]{display:none}
   </div>
 
   <div id="tab-foto">
+    <!-- FIX: sin capture="environment" para permitir elegir galería/archivo -->
     <div class="cam-zone" id="camZone" onclick="document.getElementById('fi-boleta').click()">
       <div class="cam-icon"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg></div>
-      <div class="cam-label">Subir imagen de referencia</div>
-      <div class="cam-sub">Pantallazo del push, foto de boleta...</div>
+      <div class="cam-label">Foto o archivo</div>
+      <div class="cam-sub">Toca para elegir imagen o archivo</div>
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <div style="background:var(--accent2);border:1px solid var(--accent);border-radius:10px;padding:6px 14px;font-size:12px;font-weight:600;color:var(--accent)">📷 Cámara</div>
+        <div style="background:var(--card2);border:1px solid var(--border2);border-radius:10px;padding:6px 14px;font-size:12px;font-weight:600;color:var(--ink2)">📁 Galería / archivo</div>
+      </div>
     </div>
-    <input type="file" id="fi-boleta" accept="image/*" capture="environment" onchange="handleBoleta(this)">
+    <input type="file" id="fi-boleta" accept="image/*,application/pdf" onchange="handleBoleta(this)">
     <div class="analyzing" id="analyzing">
       <div class="spin"></div>
       <div style="font-size:15px;font-weight:600;color:var(--ink)">Leyendo boleta con IA...</div>
@@ -293,7 +295,6 @@ input[type=file]{display:none}
         <div class="field"><label>Fecha</label><input type="date" id="f-fecha"></div>
         <div class="field"><label>Monto ($)</label><input type="number" id="f-monto" placeholder="0" inputmode="numeric" oninput="checkDuplicate()"></div>
       </div>
-      <!-- FIX: comercio sin readonly, con id claro y z-index alto -->
       <div class="field autocomplete-wrap" style="position:relative;z-index:10">
         <label>Comercio / Descripción</label>
         <input type="text" id="f-comercio" placeholder="ej: Jumbo, Copec..." oninput="onComercioChange()" autocomplete="off" style="position:relative;z-index:11">
@@ -381,7 +382,7 @@ input[type=file]{display:none}
       <div class="cam-label">Foto de comprobante</div>
       <div class="cam-sub">Toca para abrir cámara o galería</div>
     </div>
-    <input type="file" id="fi-comprobante" accept="image/*" capture="environment" onchange="handleComprobante(this)">
+    <input type="file" id="fi-comprobante" accept="image/*" onchange="handleComprobante(this)">
     <div class="analyzing" id="analyzing2">
       <div class="spin"></div>
       <div style="font-size:15px;font-weight:600">Leyendo comprobante...</div>
@@ -414,7 +415,6 @@ input[type=file]{display:none}
   <div class="page-header">
     <div class="page-title">Métricas <em>del amor</em></div>
   </div>
-  <!-- SELECTOR MES CON FLECHAS -->
   <div class="mes-selector">
     <button class="mes-nav-btn" id="btn-mes-prev" onclick="cambiarMes(-1)">‹</button>
     <div class="mes-nombre" id="dash-period">Cargando...</div>
@@ -551,8 +551,6 @@ const S = {
   comerciosHistorial: {},
 };
 
-// ── Estado del selector de mes ────────────────────────────────
-// offsetMes: 0 = mes actual, -1 = mes anterior, etc. Mínimo -11
 let _mesOffset = 0;
 const MESES_NOMBRES = ['Ene','Feb','Mar','Abril','Mayo','Jun','Jul','Ag','Sept','Oct','Nov','Dic'];
 
@@ -566,7 +564,6 @@ function cambiarMes(delta) {
   const nuevo = _mesOffset + delta;
   if (nuevo > 0 || nuevo < -11) return;
   _mesOffset = nuevo;
-  // Actualizar botones
   document.getElementById('btn-mes-prev').disabled = (_mesOffset <= -11);
   document.getElementById('btn-mes-next').disabled = (_mesOffset >= 0);
   loadDashboard();
@@ -607,7 +604,6 @@ window.addEventListener('load', () => {
   loadDashboard();
   loadHistorial();
 
-  // FIX: detectar parámetros en la URL para pre-llenar formulario desde email
   const params = new URLSearchParams(window.location.search);
   if (params.get('comercio') || params.get('monto')) {
     const datos = {
@@ -620,7 +616,6 @@ window.addEventListener('load', () => {
     showRegForm(datos, '📧 Desde email — edita el nombre si quieres');
     activateTg('de', de);
     activateTg('cat', cat);
-    // Ir a pantalla de registro
     showScreen('s-registro');
   }
   document.addEventListener('click', (e) => {
@@ -694,7 +689,6 @@ async function handleBoleta(input) {
   if (!input.files?.[0]) return;
   const file = input.files[0];
   showImgPreview('camZone', file, 'Imagen cargada ✓');
-  // Ir directo al formulario sin IA — foco en monto
   showRegForm({}, null);
   setTimeout(() => {
     document.getElementById('f-monto').focus();
@@ -727,7 +721,6 @@ async function handleComprobante(input) {
 function showImgPreview(zoneId, file, overlayText) {
   const zone = document.getElementById(zoneId);
   zone.classList.add('has-img');
-  // Limpiar contenido previo excepto preservar estructura base
   zone.innerHTML = '';
   const img = document.createElement('img');
   img.className = 'preview';
@@ -770,21 +763,19 @@ function showRegForm(datos, bannerMsg) {
   document.getElementById('reg-form').style.display = '';
   document.getElementById('reg-success').classList.remove('show');
 
-  // FIX: llenar campos y asegurar que sean editables
-  const fMonto   = document.getElementById('f-monto');
+  const fMonto    = document.getElementById('f-monto');
   const fComercio = document.getElementById('f-comercio');
-  const fFecha   = document.getElementById('f-fecha');
+  const fFecha    = document.getElementById('f-fecha');
 
-  if (datos.monto)    fMonto.value    = datos.monto;
-  if (datos.fecha)    fFecha.value    = datos.fecha;
-  else                fFecha.value    = today();
+  if (datos.monto)    fMonto.value   = datos.monto;
+  if (datos.fecha)    fFecha.value   = datos.fecha;
+  else                fFecha.value   = today();
 
   if (datos.comercio) {
     fComercio.value = datos.comercio;
     sugerirCampos(datos.comercio);
   }
 
-  // FIX: remover cualquier atributo que bloquee edición
   fComercio.removeAttribute('readonly');
   fComercio.removeAttribute('disabled');
   fComercio.style.pointerEvents = 'auto';
@@ -801,7 +792,6 @@ function showRegForm(datos, bannerMsg) {
     banner.innerHTML = '';
   }
 
-  // FIX: pequeño delay para que el DOM se actualice antes de hacer focus
   setTimeout(() => {
     if (datos.monto && !datos.comercio) fComercio.focus();
     else if (datos.comercio && !datos.monto) fMonto.focus();
@@ -901,7 +891,8 @@ function resetRegistro() {
   activateTg('de','ambos'); activateTg('cat','super');
   const zone = document.getElementById('camZone');
   zone.classList.remove('has-img');
-  zone.innerHTML = `<div class="cam-icon"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div><div class="cam-label">Subir imagen de referencia</div><div class="cam-sub">Pantallazo del push, foto de boleta...</div>`;
+  // FIX: resetRegistro también restaura los botones de cámara/archivo
+  zone.innerHTML = `<div class="cam-icon"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg></div><div class="cam-label">Foto o archivo</div><div class="cam-sub">Toca para elegir imagen o archivo</div><div style="display:flex;gap:8px;margin-top:8px"><div style="background:var(--accent2);border:1px solid var(--accent);border-radius:10px;padding:6px 14px;font-size:12px;font-weight:600;color:var(--accent)">📷 Cámara</div><div style="background:var(--card2);border:1px solid var(--border2);border-radius:10px;padding:6px 14px;font-size:12px;font-weight:600;color:var(--ink2)">📁 Galería / archivo</div></div>`;
   document.getElementById('fi-boleta').value = '';
 }
 
@@ -1031,7 +1022,6 @@ async function loadDashboard() {
   content.innerHTML = `<div style="padding:40px;text-align:center"><div class="spin" style="margin:0 auto"></div><div style="font-size:13px;color:var(--ink3);margin-top:12px">Cargando ${mesNombre}...</div></div>`;
 
   try {
-    // FIX: enviar parámetro mes= para que el Apps Script devuelva la hoja correcta
     const url = S.scriptUrl + '?action=metrics&sheetId=' + S.sheetId + '&mes=' + encodeURIComponent(mesNombre);
     const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
     const r = await fetch(proxyUrl);
@@ -1290,7 +1280,7 @@ function limpiarNombre(str) { return String(str).replace(/\s+/g,' ').trim().slic
 function sugerirCat(c) { for (const [k,v] of Object.entries(PATRONES_CAT)) if (c.includes(k)) return v; return 'otro'; }
 function sugerirDe(c)  { for (const [k,v] of Object.entries(PATRONES_DE))  if (c.includes(k)) return v; return 'ambos'; }
 
-// ── Auditar stubs (mantener funcionalidad existente) ──────────
+// ── Auditar ───────────────────────────────────────────────────
 function handleAuditDrop(e) { e.preventDefault(); const f=e.dataTransfer.files[0]; if(f) handleAuditFile({files:[f]}); }
 function handleAuditFile(input) {
   const file = input.files?.[0];
