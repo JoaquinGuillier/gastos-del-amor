@@ -1097,7 +1097,7 @@ function renderDashboard(d) {
       </div>
       <div class="metric" style="cursor:pointer" onclick="abrirModal12m()">
         <div class="metric-label">Promedio 12m ↗</div>
-        <div class="metric-val sm">${fmtCLP(d.promedio12)}</div>
+        <div class="metric-val sm">${fmtCLP(d.promedio12*1000)}</div>
         <div class="metric-sub" style="color:var(--accent)">ver detalle →</div>
       </div>
       <div class="metric" style="cursor:pointer" onclick="abrirModalAhorros()">
@@ -1379,7 +1379,7 @@ function renderModal12m(meses, promedio12) {
     `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px">
       <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center">
         <div style="font-size:10px;font-weight:600;color:var(--ink3);text-transform:uppercase;margin-bottom:6px">Promedio 12m</div>
-        <div style="font-size:20px;font-weight:700;color:var(--ink)">${fmtCLP(promedio12)}</div>
+        <div style="font-size:20px;font-weight:700;color:var(--ink)">${fmtCLP(promedio12*1000)}</div>
       </div>
       <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:14px;text-align:center">
         <div style="font-size:10px;font-weight:600;color:var(--ink3);text-transform:uppercase;margin-bottom:6px">Meses</div>
